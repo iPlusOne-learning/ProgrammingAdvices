@@ -24,19 +24,19 @@ struct stUser
     bool MarkedToBeDeleted = false;
 };
 
-void TransactionsMenuScreen(std::vector <stClient> &vClients);
-bool ShowMainMenu(std::vector<stClient> &vClients);
-void Login(std::vector<stClient> &vClients);
-void ManageUsersMenuScreen(std::vector<stClient> &vClients);
+void TransactionsMenuScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients, int &PermissionOption);
+bool ShowMainMenu(std::vector<stUser> &vUsers,std::vector<stClient> &vClients, int &PermissionOption);
+void Login(std::vector<stUser> &vUsers,std::vector<stClient> &vClients, int &PermissionOption);
+void ManageUsersMenuScreen(std::vector<stClient> &vClients, std::vector <stUser> &vUsers, int &PermissionOption);
 
 
 stUser ReadUserInfo()
 {
     stUser User;
     std::cout << "Enter Username: ";
-    std::getline(std::cin, User.Username);
+    std::getline(std::cin >> std::ws, User.Username);
     std::cout << "Enter password: ";
-    std::getline(std::cin, User.Password);
+    std::getline(std::cin >> std::ws, User.Password);
     return User;
 }
 
@@ -69,9 +69,9 @@ stClient ReadNewClientData(std::vector<stClient> &vClients)
     std::cout << "\nEnter pin code: ";
     std::getline(std::cin >> std::ws, NewClient.PinCode);
     std::cout << "\nEnter client name: ";
-    std::getline(std::cin, NewClient.ClientName);
+    std::getline(std::cin >> std::ws, NewClient.ClientName);
     std::cout << "\nEnter phone number ";
-    std::getline(std::cin, NewClient.PhoneNumber);
+    std::getline(std::cin >> std::ws, NewClient.PhoneNumber);
     std::cout << "\nEnter account balance: ";
     std::cin >> NewClient.AccountBalance;
 
@@ -165,7 +165,7 @@ void LoadClientsDataInVector(std::vector<stClient> &vClients)
     }
 }
 
-void PrintClientsCard(std::vector<stClient> vClients)
+void PrintClientsCard(std::vector<stClient> &vClients)
 {
     bool IsAlreadyPrinted = false;
 
@@ -505,7 +505,7 @@ void DepositOnClientAccountNumber(std::vector <stClient> &vClients)
     DepositMoney(AccountNumber, vClients);
 }
 
-void PerformTransactionMenuOperations(std::vector <stClient> &vClients)
+void PerformTransactionMenuOperations(std::vector <stUser> &vUsers,std::vector <stClient> &vClients, int &PermissionOption)
 {
     short Choice;
     std::cin >> Choice;
@@ -516,14 +516,14 @@ void PerformTransactionMenuOperations(std::vector <stClient> &vClients)
         {
             system("clear");
             DepositOnClientAccountNumber(vClients);
-            TransactionsMenuScreen(vClients);
+            TransactionsMenuScreen(vUsers, vClients, PermissionOption);
             break;
         }
         case enTransactions::eWithdraw:
         {
             system("clear");
             WithdrawOnClientAccountNumber(vClients);
-            TransactionsMenuScreen(vClients);
+            TransactionsMenuScreen(vUsers, vClients, PermissionOption);
             break;
         }
         case enTransactions::eTotalBalance:
@@ -535,14 +535,14 @@ void PerformTransactionMenuOperations(std::vector <stClient> &vClients)
         case enTransactions::eMainMenu:
         {
             system("clear");
-            ShowMainMenu(vClients);
+            ShowMainMenu(vUsers, vClients, PermissionOption);
             break;
         }
     }
 
 }
 
-void TransactionsMenuScreen(std::vector <stClient> &vClients)
+void TransactionsMenuScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients, int &PermissionOption)
 {
     std::cout << "\n========================================================================\n";
     std::cout << "\n\t\t\t Transactions Menu Screen\n";
@@ -557,7 +557,7 @@ void TransactionsMenuScreen(std::vector <stClient> &vClients)
 
     std::cout << "Choose what you want to do from [1 to 4]: \n";
 
-    PerformTransactionMenuOperations(vClients);
+    PerformTransactionMenuOperations(vUsers, vClients, PermissionOption);
     
 }
 
@@ -694,7 +694,6 @@ void SpecificUserPermissions(stUser &AddNewUser)
         TotalPermission |= enUserPermissions::ManageUsers;
     }
     AddNewUser.Permissions = TotalPermission;
-    std::cout << "Total permission: " << TotalPermission << std::endl;
 }
 
 void AddNewUserToRecord(std::vector<stUser> &vUsers)
@@ -733,9 +732,10 @@ void AddNewUserToRecord(std::vector<stUser> &vUsers)
         WriteUsersDataToFile(AddNewUser);
     }
 }
+
 void PrintUserInfo(std::string Username, std::vector<stUser> &vUsers)
 {
-    std::cout << "\nThe following are the user details: " << std::endl;
+    std::cout << "\nThe following are the user details: ";
     std::cout << "\n---------------------------------------------------------------------\n";
 
     for (stUser &U : vUsers)
@@ -744,7 +744,7 @@ void PrintUserInfo(std::string Username, std::vector<stUser> &vUsers)
         {
             std::cout << "Username" << std::setw(14) << ": " << U.Username << std::endl;
             std::cout << "Password" << std::setw(14) << ": " << U.Password << std::endl;
-            std::cout << "Permission" << std::setw(14) << ": " << U.Permissions << std::endl;
+            std::cout << "Permission" << std::setw(12) << ": " << U.Permissions << std::endl;
         }
     }
 }
@@ -796,14 +796,13 @@ void ConfirmDeleteUserFromRecord(std::string Username, std::vector<stUser> &vUse
  
 }
 
-void DeleteUserFromRecord(std::vector<stUser> &vUsers)
+void DeleteUserFromRecord(std::string UserNameToDelete, std::vector<stUser> &vUsers)
 {
-    std::string UserNameToDelete = "";
     char Choice;
 
     PrintUserInfo(UserNameToDelete, vUsers);
 
-    std::cout << "\nAre you sure you want to dele this user? y/n";
+    std::cout << "\nAre you sure you want to delete this user? y/n: ";
     std::cin >> Choice;
     if (toupper(Choice) == 'Y')
     {
@@ -811,7 +810,7 @@ void DeleteUserFromRecord(std::vector<stUser> &vUsers)
     }
 }
 
-void DeleteUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients)
+void DeleteUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients, int &PermissionOption)
 {
     bool IsItAlreadyDisplayed = false;
     if (IsItAlreadyDisplayed == false)
@@ -833,16 +832,16 @@ void DeleteUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClie
     char AddMore;
     do
     {
-        DeleteUserFromRecord(vUsers);
+        DeleteUserFromRecord(UserNameToDelete,vUsers);
         std::cout << "\nUser deleted successfully, do you want to delete more users? y/n? ";
         std::cin >> AddMore;
 
     } while (toupper(AddMore) == 'Y');
 
-    ManageUsersMenuScreen(vClients);
+    ManageUsersMenuScreen(vClients, vUsers, PermissionOption);
 }
 
-void AddNewUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients )
+void AddNewUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients, int &PermissionOption )
 {
     bool IsItAlreadyDisplayed = false;
     if (IsItAlreadyDisplayed == false)
@@ -862,10 +861,122 @@ void AddNewUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClie
 
     } while (toupper(AddMore) == 'Y');
 
-    ManageUsersMenuScreen(vClients);
+    ManageUsersMenuScreen(vClients, vUsers, PermissionOption);
 }
 
-void  PerformManageUsersMenuOperations(std::vector <stUser> &vUsers, std::vector<stClient> &vClients)
+
+void ConfirmUpdateUserInRecord(std::string Username, std::vector<stUser> &vUsers)
+{
+    char GiveFullAccess;
+    for (stUser &U : vUsers)
+    {
+        if (Username == U.Username)
+        {
+            std::cout << "Enter password: ";
+            std::getline(std::cin >> std::ws, U.Password);
+            std::cout << "\nDo you want to give full access? y/n? ";
+            std::cin >> GiveFullAccess;
+            if (toupper(GiveFullAccess) == 'Y')
+            {
+                U.Permissions = -1;
+            }
+            else
+            {
+                SpecificUserPermissions(U);
+            }
+                    
+        }
+    }
+
+}
+
+void UpdateUserInRecord(std::string UserNameToUpdate, std::vector<stUser> &vUsers)
+{
+    char Choice;
+
+    PrintUserInfo(UserNameToUpdate, vUsers);
+
+    std::cout << "\nAre you sure you want to update this user? y/n: ";
+    std::cin >> Choice;
+    if (toupper(Choice) == 'Y')
+    {
+        ConfirmUpdateUserInRecord(UserNameToUpdate, vUsers);
+    }
+    std::vector <stUser> vUsers2;
+    for (stUser &U2 : vUsers)
+    {
+        vUsers2.push_back(U2);
+    }
+    std::fstream File;
+    File.open(UsersFileName, std::ios::out);
+    if (File.is_open())
+    {
+        std::string Line = "";
+        for (stUser &U : vUsers2)
+        {
+            Line = ConvertUserRecordToLine(U);
+            File << Line << std::endl;
+        }
+
+    }
+}
+
+void UpdateUserScreen(std::vector<stUser> &vUsers, std::vector <stClient> &vClients)
+{
+    bool IsItAlreadyDisplayed = false;
+    if (IsItAlreadyDisplayed == false)
+    {
+        std::cout << "\n---------------------------------------------------------------------\n";
+        std::cout << "\t\t\t Update User Screen";
+        std::cout << "\n---------------------------------------------------------------------\n";
+        IsItAlreadyDisplayed = true;
+    }
+    std::string UserNameToUpdate = "";
+    std::cout << "\nPlease enter username: ";
+    std::getline(std::cin >> std::ws, UserNameToUpdate);
+    char Choice;
+    if (!IsUserExistByOnlyUsername(UserNameToUpdate, vUsers))
+    {
+        std::cout << "\nUser with Username (" << UserNameToUpdate << ") is NOT FOUND!" << std::endl;
+        return ;
+    }
+    char AddMore;
+    do
+    {
+        UpdateUserInRecord(UserNameToUpdate,vUsers);
+        std::cout << "\nUser updated successfully, do you want to update more users? y/n? ";
+        std::cin >> AddMore;
+
+    } while (toupper(AddMore) == 'Y');
+
+}
+
+void FindUserInRecord(std::vector<stUser> &vUsers, std::vector <stClient> &vClients)
+{
+    bool IsItAlreadyDisplayed = false;
+    if (IsItAlreadyDisplayed == false)
+    {
+        std::cout << "\n---------------------------------------------------------------------\n";
+        std::cout << "\t\t\tFind User Screen";
+        std::cout << "\n---------------------------------------------------------------------\n";
+        IsItAlreadyDisplayed = true;
+    }
+    std::string UserNameToFind = "";
+    std::cout << "\nPlease enter username: ";
+    std::getline(std::cin >> std::ws, UserNameToFind);
+    if (IsUserExistByOnlyUsername(UserNameToFind, vUsers))
+    {
+        PrintUserInfo(UserNameToFind, vUsers);
+    }
+    else
+    {     
+        std::cout << "\nUser with Username (" << UserNameToFind << ") is NOT FOUND!" << std::endl;
+        return ;
+    }
+    std::cout << "\n---------------------------------------------------------------------\n";
+}
+
+void  PerformManageUsersMenuOperations(std::vector <stUser> &vUsers, std::vector<stClient> &vClients, int &PermissionOption)
 {
     short Choice;
     std::cin >> Choice;
@@ -876,37 +987,36 @@ void  PerformManageUsersMenuOperations(std::vector <stUser> &vUsers, std::vector
         {
             system("clear");
             ShowUsersList(vUsers);
-            ManageUsersMenuScreen(vClients);
             break;
         }
         case enManageUsers::AddNewUser:
         {
             system("clear");
-            AddNewUserScreen(vUsers, vClients);
+            AddNewUserScreen(vUsers, vClients, PermissionOption);
             break;
         }
         case enManageUsers::DeleteUser:
         {
             system("clear");
-            DeleteUserScreen(vUsers, vClients);
-             ManageUsersMenuScreen(vClients);
-
+            DeleteUserScreen(vUsers, vClients, PermissionOption);
             break;
         }
         case enManageUsers::UpdateUser:
         {
             system("clear");
+            UpdateUserScreen(vUsers, vClients);
             break;
         }
         case enManageUsers::FindUser:
         {
             system("clear");
+            FindUserInRecord(vUsers, vClients);
             break;
         }
         case enManageUsers::MainMenu:
         {
             system("clear");
-            ShowMainMenu(vClients);
+            ShowMainMenu(vUsers, vClients, PermissionOption);
             break;
         }
     }
@@ -923,11 +1033,10 @@ stUser ConvertUserLineToRecord(std::string UserLine)
     return User;
 }
 
-std::vector <stUser> LoadUsersDateInVector()
+void LoadUsersDateInVector(std::vector <stUser> &vUsers)
 {
     std::fstream File;
     File.open(UsersFileName, std::ios::in);
-    std::vector <stUser> vUsers;
     if (File.is_open())
     {
         std::string UserLine = "";
@@ -939,10 +1048,9 @@ std::vector <stUser> LoadUsersDateInVector()
         }
         File.close();
     }
-    return vUsers;
 }
 
-void ManageUsersMenuScreen(std::vector<stClient> &vClients)
+void ManageUsersMenuScreen(std::vector<stClient> &vClients, std::vector <stUser> &vUsers, int &PermissionOption)
 {
     std::cout << "\n========================================================================\n";
     std::cout << "\n\t\t\t Manage Users Menu Screen\n";
@@ -960,20 +1068,19 @@ void ManageUsersMenuScreen(std::vector<stClient> &vClients)
 
     std::cout << "Choose what you want to do from [1 to 6]: ";
     
-    std::vector <stUser> vUsers = LoadUsersDateInVector();
-    PerformManageUsersMenuOperations(vUsers, vClients); 
+    LoadUsersDateInVector(vUsers);
+    PerformManageUsersMenuOperations(vUsers, vClients, PermissionOption);
 }
 
-bool IsUserExist(stUser User)
+bool IsUserExist(stUser User, std::vector<stUser> &vUsers, int &PermissionOption)
 {
-
-    std::vector <stUser> vUsers = LoadUsersDateInVector();
     for (stUser &U : vUsers)
     {
         if (User.Username == U.Username)
         {
             if (User.Password == U.Password)
             {
+                PermissionOption = U.Permissions;
                 return true;
             }
             else
@@ -985,27 +1092,48 @@ bool IsUserExist(stUser User)
     return false;
 }
 
-void Login(std::vector<stClient> &vClients)
+void Login(std::vector<stUser> &vUsers,std::vector<stClient> &vClients, int &PermissionOption)
 {
     std::cout << "\n---------------------------------------------------\n";
     std::cout << "\t\tLogin Screen";
     std::cout << "\n---------------------------------------------------\n";
-    
     do {
         stUser User = ReadUserInfo();
 
-        if (IsUserExist(User))
+        if (IsUserExist(User, vUsers, PermissionOption))
         {
-            ShowMainMenu(vClients);
+            // ShowMainMenu(vUsers, vClients, PermissionOption);
+            bool KeepRunning = true;
+            while (KeepRunning)
+            {
+                KeepRunning = ShowMainMenu(vUsers, vClients, PermissionOption);
+                if (KeepRunning)
+                {
+                    std::cout << "\nPress any key to return to main menu....";
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cin.get();
+                }
+            }
+
         }
         else
         {
             std::cout << "Invalid username/password!\n";
         }
     } while (true);
+
 }
 
-bool ShowMainMenu(std::vector<stClient> &vClients)
+void PrintDenialOfService()
+{
+    std::cout << "\n---------------------------------------------------------------\n";
+    std::cout << "\nAccess Denied.\n";
+    std::cout << "You don't have permission to do this.\n";
+    std::cout << "Please contact your Admin.\n"; 
+    std::cout << "\n---------------------------------------------------------------\n";
+}
+
+bool ShowMainMenu(std::vector<stUser> &vUsers,std::vector<stClient> &vClients, int &PermissionOption)
 {
     std::cout << "\n========================================================================\n";
     std::cout << "\n\t\t\t Main Menu Screen\n";
@@ -1025,64 +1153,51 @@ bool ShowMainMenu(std::vector<stClient> &vClients)
     short Choice;
     std::cout << "Choose what you want to do from [1 to 8]: ";
     std::cin >> Choice;
-    if (Choice == 1)
+    if (Choice == 1 && PermissionOption & enUserPermissions::ClientList)
     {
         system("clear");
         PrintClientsCard(vClients);
+        return true;
     }
-    else if (Choice == 2)
+    else if (Choice == 2 && PermissionOption & enUserPermissions::AddNewClient2)
     {
         system("clear");
         AddNewClient(vClients);
         WriteClientsDataToFile(vClients);
+        return true;
     }
-    else if (Choice == 3)
+    else if (Choice == 3 && (PermissionOption & enUserPermissions::DeleteClient))
     {
         system("clear");
         DeleteClientInFile(vClients);
+        return true;
     }
-    else if (Choice == 4)
+    else if (Choice == 4 && (PermissionOption & enUserPermissions::UpdateClient))
     {
         system("clear");
         UpdateClientInfo(vClients);
+        return true;
     }
-    else if (Choice == 5)
+    else if (Choice == 5 && (PermissionOption & enUserPermissions::FindClient))
     {
         system("clear");
         FindClientInFile(vClients);
+        return true;
     }
-    else if (Choice == 6)
+    else if (Choice == 6 && (PermissionOption & enUserPermissions::Transactions))
     {
         system("clear");
-        TransactionsMenuScreen(vClients);
+        TransactionsMenuScreen(vUsers, vClients, PermissionOption);
+        return true;
     }
-    else if (Choice == 7)
+    else if (Choice == 7 && (PermissionOption & enUserPermissions::ManageUsers))
     {
         system("clear");
-        ManageUsersMenuScreen(vClients);
-
-    }
-    else if (Choice == 8)
-    {
-        system("clear");
-        Login(vClients);
-        // EndProgram();
-        return false;
-    }
-    return true;
-}
-
-int main()
-{
-        std::vector<stClient> vClients;
-
-        LoadClientsDataInVector(vClients);
-
-        Login(vClients);
         bool KeepRunning = true;
         while (KeepRunning)
         {
-            KeepRunning = ShowMainMenu(vClients);
+            system("clear");
+            ManageUsersMenuScreen(vClients, vUsers, PermissionOption);
             if (KeepRunning)
             {
                 std::cout << "\nPress any key to return to main menu....";
@@ -1090,6 +1205,44 @@ int main()
                 std::cin.get();
             }
         }
+        return true;
+    }
+    else if (Choice == 8)
+    {
+        system("clear");
+        Login(vUsers, vClients, PermissionOption);
+        // EndProgram();
+        return false;
+    }
+    else
+    {
+        system("clear");
+        PrintDenialOfService();
+        return true;
+    }
+    return true;
+}
+
+int main()
+{
+        std::vector<stClient> vClients;
+        std::vector <stUser> vUsers;
+        int PermissionOption = -1;
+
+        LoadClientsDataInVector(vClients);
+        LoadUsersDateInVector(vUsers);
+        Login(vUsers, vClients, PermissionOption);
+        // bool KeepRunning = true;
+        // while (KeepRunning)
+        // {
+        //     KeepRunning = ShowMainMenu(vUsers, vClients, PermissionOption);
+        //     if (KeepRunning)
+        //     {
+        //         std::cout << "\nPress any key to return to main menu....";
+        //         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        //         std::cin.get();
+        //     }
+        // }
 
     return 0;
 }
