@@ -10,7 +10,10 @@ class clsPerson
     std::string _Phone;
 
     public:
+    clsPerson()
+    {
 
+    }
     clsPerson(int ID, std::string FirstName, std::string LastName, std::string Email, std::string PhoneNumber )
     {
         _ID = ID;
@@ -105,11 +108,6 @@ class clsEmployee : public clsPerson
     std::string _Department;
 
     public:
-    clsEmployee (int ID, std::string FirstName, std::string LastName,
-    std::string Email, std::string Phone, std::) : clsPerson(ID, FirstName, LastName, Email, Phone)
-    {
-
-    }
 
     void SetTitle(std::string Title)
     {
@@ -146,11 +144,15 @@ int main()
     // Person1.SendEmail("Hi", "How are you doing?");
     // Person1.SendSMS("What's up?");
 
-    clsEmployee Employee1(10, "adam", "sed","adam@gmail.com", "04444444");
+    clsEmployee Employee1;
+    Employee1.SetFirstName("iplus");
+    Employee1.SetLastName("one");
+    Employee1.SetEmail("ipluson@gmail.com");
+    Employee1.Print();
+    Employee1.SendEmail("hi", "how are you");
+    Employee1.SetSalary(4000);
 
     Employee1.Print();
-
-
     // std::cout << Employee1.GetSalary() << std::endl;
     // clsEmployee Employee1(30,"iPlus", "One", "Technicien", "iplusone@gmail.com", "0333333", 2500,"IT");
     // Employee1.SendEmail("Hello,", "Meeting is at 5am");
