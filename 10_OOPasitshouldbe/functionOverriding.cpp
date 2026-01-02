@@ -106,9 +106,11 @@ class clsEmployee : public clsPerson
 
     public:
     clsEmployee (int ID, std::string FirstName, std::string LastName,
-    std::string Email, std::string Phone, std::) : clsPerson(ID, FirstName, LastName, Email, Phone)
+    std::string Email, std::string Phone, std::string Title, std::string Department, double Salary) : clsPerson(ID, FirstName, LastName, Email, Phone)
     {
-
+        _Title = Title;
+        _Department = Department;
+        _Salary = Salary;
     }
 
     void SetTitle(std::string Title)
@@ -135,6 +137,22 @@ class clsEmployee : public clsPerson
     {
         return _Department;
     }
+    void Print()
+    {
+        std::cout << "Info: \n";
+        std::cout << "================================\n";
+        std::cout << "ID             : " << ID() << std::endl;
+        std::cout << "FirstName      : " << GetFirstName() << std::endl; 
+        std::cout << "LastName       : " << GetLastName() << std::endl; 
+        std::cout << "Full Name      : " << SetFullName() << std::endl; 
+        std::cout << "Email          : " << GetEmail() << std::endl; 
+        std::cout << "Phone          : " << GetPhoneNumber() << std::endl; 
+        std::cout << "Title          : " << _Title << std::endl;
+        std::cout << "Department     : " << _Department << std::endl;
+        std::cout << "Salary         : " << _Salary << std::endl;
+        std::cout << "\n================================\n";
+
+    }  
 };
 
 int main()
@@ -146,7 +164,7 @@ int main()
     // Person1.SendEmail("Hi", "How are you doing?");
     // Person1.SendSMS("What's up?");
 
-    clsEmployee Employee1(10, "adam", "sed","adam@gmail.com", "04444444");
+    clsEmployee Employee1(10, "adam", "sed","adam@gmail.com", "04444444", "Technicien", "IT", 40000);
 
     Employee1.Print();
 
