@@ -1,0 +1,117 @@
+#pragma once
+
+#include <iostream>
+#include <string>
+#include <cctype>
+#include "clsUtil.h"
+#include "clsDate.h"
+#include "clsString.h"
+
+class clsInputValidate
+{
+    public:
+
+    static bool IsNumberBetween(short Number, short From, short To)
+    {
+        if (Number >= From && Number <= To)
+            return true;
+        else
+            return false;
+    }
+    static bool IsNumberBetween(int Number, int From, int To)
+    {
+        if (Number >= From && Number <= To)
+            return true;
+        else
+            return false;
+    }
+    static bool IsNumberBetween(float Number, float From, float To)
+    {
+        if (Number >= From && Number <= To)
+            return true;
+        else
+            return false;
+    }
+    static bool IsNumberBetween(double Number, double From, double To)
+    {
+        if (Number >= From && Number <= To) 
+            return true;
+        else 
+            return false;
+    }
+    static bool IsNumberBetween(clsDate Date, clsDate From, clsDate To)
+    {
+        if ((clsDate::IsDate1AfterDate2(Date,From) || clsDate::IsDate1EqualDate2(Date,From)) 
+            && (clsDate::IsDate1BeforeDate2(Date, To) || clsDate::IsDate1EqualDate2(Date,To)))
+        {
+            return true;
+        }
+        if ((clsDate::IsDate1AfterDate2(Date,To) || clsDate::IsDate1EqualDate2(Date,To)) 
+            && (clsDate::IsDate1BeforeDate2(Date, From) || clsDate::IsDate1EqualDate2(Date,From)))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    static int ReadIntNumber(string ErrorMessage = "Invalid Number, Enter again\n")
+    {
+        int Number;
+        while(!(cin >> Number))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << ErrorMessage;
+        }
+        return Number;
+    }
+    
+    static float ReadFloatNumber(string ErrorMessage = "Invalid Number, Enter again\n")
+    {
+        float Number;
+        while(!(cin >> Number))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << ErrorMessage;
+        }
+        return Number;
+    }
+
+    static double ReadDblNumber(string ErrorMessage = "Invalid Number, Enter again\n")
+    {
+        double Number;
+        while(!(cin >> Number))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << ErrorMessage;
+        }
+        return Number;
+    }
+
+    static int ReadIntNumberBetween(int From, int To, string ErrorMessage="Number must be\n ")
+    {
+        int Number = ReadIntNumber();
+        while (!IsNumberBetween(Number, From, To))
+        {
+            cout << ErrorMessage << endl;
+            Number = ReadIntNumber();
+        }
+    }
+
+    static double ReadDblNumberBetween(double From, double To, string ErrorMessage="Number must be\n ")
+    {
+        double Number = ReadIntNumber();
+        while (!IsNumberBetween(Number, From, To))
+        {
+            cout << ErrorMessage << endl;
+            Number = ReadIntNumber();
+        }
+    }
+
+    static bool IsValidDate(clsDate Date)
+    {
+        return clsDate::IsValidDate(Date);
+    }
+};
