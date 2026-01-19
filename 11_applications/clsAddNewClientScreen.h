@@ -73,7 +73,7 @@ class clsAddNewClientScreen : protected clsScreen
             _PrintClient(NewClient);
             break;
         }
-        case clsBankClient::enSaveResults::svFaildEmptyObject:
+        case clsBankClient::enSaveResults::svFailedEmptyObject:
         {
             cout << "\nError account  was not saved because it is emtpy";
             break;

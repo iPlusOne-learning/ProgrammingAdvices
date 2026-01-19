@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <limits>
 #include <iostream>
 
 std::string ClientsFileName = "file.txt";

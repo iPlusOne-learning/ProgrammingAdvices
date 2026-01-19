@@ -6,6 +6,7 @@
 #include "clsUtil.h"
 #include "clsDate.h"
 #include "clsString.h"
+#include <limits>
 
 class clsInputValidate
 {

@@ -229,7 +229,7 @@ public:
         return _GetEmptyClientObject();
     }
 
-    enum enSaveResults { svFaildEmptyObject = 0, svSucceeded = 1, svFailedAccountNumberExists = 2 };
+    enum enSaveResults { svFailedEmptyObject = 0, svSucceeded = 1, svFailedAccountNumberExists = 2 };
 
     enSaveResults Save()
     {
@@ -239,7 +239,7 @@ public:
         {
             if (IsEmpty())
             {
-                return enSaveResults::svFaildEmptyObject;
+                return enSaveResults::svFailedEmptyObject;
             }
         }
         case enMode::UpdateMode:
