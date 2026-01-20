@@ -9,6 +9,7 @@
 #include "clsDeleteClientScreen.h"
 #include "clsUpdateClientScreen.h"
 #include "clsFindClientScreen.h"
+#include "clsTransactionsScreen.hpp"
 #include <thread>
 #include <chrono>
 
@@ -62,7 +63,8 @@ class clsMainScreen : protected clsScreen
     }
     static void _ShowTransactionsMenu()
     {
-        cout << "\nTransactions Menu Will be here...\n";
+        // cout << "\nTransactions Menu Will be here...\n";
+        clsTransactionsScreen::ShowTransactionsMenu();
     }
     static void _ShowManageUsersMenu()
     {
@@ -110,6 +112,7 @@ class clsMainScreen : protected clsScreen
         case enMainMenuOptions::eShowTransactionsMenu:
             system("clear");
             _ShowTransactionsMenu();
+            _GoBackToMainMenu();
             break;
 
         case enMainMenuOptions::eManageUsers:
