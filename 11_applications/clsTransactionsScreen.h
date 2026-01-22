@@ -10,12 +10,13 @@
 
 class clsTransactionsScreen : public clsScreen
 {
-    private:
-    enum enTransactionsMenuOptions {
+private:
+    enum enTransactionsMenuOptions
+    {
 
         eDeposit = 1,
-         eWithdraw = 2,
-        eShowTotalBalance = 3, 
+        eWithdraw = 2,
+        eShowTotalBalance = 3,
         eShowMainMenu = 4
     };
     static short ReadTransactionsMenuOption()
@@ -33,7 +34,6 @@ class clsTransactionsScreen : public clsScreen
     {
         // cout << "\n withdaw screen will be here later....\n";
         clsWithdrawScreen::ShowWithdrawScreen();
-
     }
     static void _ShowTotalBalancesScreen()
     {
@@ -47,11 +47,11 @@ class clsTransactionsScreen : public clsScreen
         std::cin.get();
         ShowTransactionsMenu();
     }
-    public:
 
+public:
     static void _PerformTransactionsMenuOption(enTransactionsMenuOptions TransactionsMenuOption)
     {
-   switch (TransactionsMenuOption)
+        switch (TransactionsMenuOption)
         {
         case enTransactionsMenuOptions::eDeposit:
         {
@@ -77,16 +77,19 @@ class clsTransactionsScreen : public clsScreen
             break;
         }
 
-
         case enTransactionsMenuOptions::eShowMainMenu:
         {
-            //do nothing here the main screen will handle it :-) ;
+            // do nothing here the main screen will handle it :-) ;
         }
-        }     
+        }
     }
     static void ShowTransactionsMenu()
     {
         system("clear");
+        if (!CheckAccessRights(clsUser::enPermissions::pTranactions))
+        {
+            return;
+        }
         _DrawScreenHeader("\t\tTransaction Menu Screen");
 
         cout << setw(20) << left << "" << "===========================================\n";
@@ -98,6 +101,6 @@ class clsTransactionsScreen : public clsScreen
         cout << setw(20) << left << "" << "\t[4] Main Menu.\n";
         cout << setw(20) << left << "" << "===========================================\n";
 
-        _PerformTransactionsMenuOption((enTransactionsMenuOptions)ReadTransactionsMenuOption());       
+        _PerformTransactionsMenuOption((enTransactionsMenuOptions)ReadTransactionsMenuOption());
     };
 };

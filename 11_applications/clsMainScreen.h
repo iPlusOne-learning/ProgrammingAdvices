@@ -1,18 +1,19 @@
 #pragma once
-
-#include "clsScreen.h"
 #include <iostream>
-#include <iomanip>
+#include "clsScreen.h"
 #include "clsInputValidate.h"
-#include "clsClientListScreen.h"
+#include "clsListClientScreen.h"
 #include "clsAddNewClientScreen.h"
 #include "clsDeleteClientScreen.h"
 #include "clsUpdateClientScreen.h"
 #include "clsFindClientScreen.h"
 #include "clsTransactionsScreen.h"
 #include "clsManageUsersScreen.h"
-#include <thread>
-#include <chrono>
+#include "clsLoginScreen.h"
+#include "Global.h"
+
+using namespace std;
+
 
 class clsMainScreen : protected clsScreen
 {
@@ -40,7 +41,7 @@ class clsMainScreen : protected clsScreen
     static void _ShowAllClientsScreen()
     {
         // cout << "\nClient List Screen Will be here...\n";
-        clsClientListScreen::ShowClientsList();
+        clsListClientScreen::ShowClientsList();
     }
     static void _ShowAddNewClientsScreen()
     {
@@ -72,9 +73,13 @@ class clsMainScreen : protected clsScreen
         // cout << "\nUsers Menu Will be here...\n";
         clsManageUsersScreen::ShowManageUsersMenu();
     }
-    static void _ShowEndScreen()
+    // static void _ShowEndScreen()
+    // {
+    //     cout << "\nEnd Screen Will be here...\n";
+    // }
+    static void _Logout()
     {
-        cout << "\nEnd Screen Will be here...\n";
+        CurrentUser = clsUser::Find("","");
     }
     static void _PerformMainMenuOption(enMainMenuOptions MainMenuOption)
     {
@@ -124,20 +129,19 @@ class clsMainScreen : protected clsScreen
 
         case enMainMenuOptions::eExit:
             system("clear");
-            _ShowEndScreen();
+            // _ShowEndScreen();
             //Login();
-
+            _Logout();
             break;
         }
     }
 
     public:
-    
+
     static void ShowMainMenu()
     {
         system("clear");
         _DrawScreenHeader("\t\tMain Screen");
-
         cout << setw(20) << left <<""<< "===========================================\n";
         cout << setw(20) << left << "" << "\t\t\tMain Menu\n";
         cout << setw(20) << left << "" << "===========================================\n";

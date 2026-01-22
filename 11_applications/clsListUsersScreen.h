@@ -12,12 +12,12 @@ private:
     static void _PrintUserRecordLine(clsUser User)
     {
 
-        cout << setw(8) << left << "" << "| " << setw(12) << left << User.GetUserName();
-        cout << "| " << setw(25) << left << User.FullName();
-        cout << "| " << setw(12) << left << User.GetPhone();
-        cout << "| " << setw(20) << left << User.GetEmail();
+        cout << setw(8) << left << "" << "| " << setw(10) << left << User.GetUserName();
+        cout << "| " << setw(20) << left << User.FullName();
+        cout << "| " << setw(10) << left << User.GetPhone();
+        cout << "| " << setw(16) << left << User.GetEmail();
         cout << "| " << setw(10) << left << User.GetPassword();
-        cout << "| " << setw(12) << left << User.GetPermissions();
+        cout << "| " << setw(6) << left << User.GetPermissions();
 
     }
 
@@ -32,16 +32,16 @@ public:
 
         _DrawScreenHeader(Title, SubTitle);
 
-        cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+        cout << setw(8) << left << "" << "\n\t____________________________________________";
         cout << "______________________________________________\n" << endl;
 
-        cout << setw(8) << left << "" << "| " << left << setw(12) << "UserName";
-        cout << "| " << left << setw(25) << "Full Name";
-        cout << "| " << left << setw(12) << "Phone";
-        cout << "| " << left << setw(20) << "Email";
+        cout << setw(8) << left << "" << "| " << left << setw(10) << "UserName";
+        cout << "| " << left << setw(20) << "Full Name";
+        cout << "| " << left << setw(10) << "Phone";
+        cout << "| " << left << setw(16) << "Email";
         cout << "| " << left << setw(10) << "Password";
-        cout << "| " << left << setw(12) << "Permissions";
-        cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+        cout << "| " << left << setw(6) << "Permissions";
+        cout << setw(8) << left << "" << "\n\t____________________________________________";
         cout << "______________________________________________\n" << endl;
 
         if (vUsers.size() == 0)
@@ -55,7 +55,7 @@ public:
                 cout << endl;
             }
 
-        cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+        cout << setw(8) << left << "" << "\n\t_____________________________________________";
         cout << "______________________________________________\n" << endl;
     }
 

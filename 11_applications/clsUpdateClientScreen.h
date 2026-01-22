@@ -8,7 +8,7 @@
 
 class clsUpdateClientScreen : protected clsScreen
 {
-    private:
+private:
     static void _PrintClient(clsBankClient Client)
     {
         cout << "\nClient Card:";
@@ -22,7 +22,6 @@ class clsUpdateClientScreen : protected clsScreen
         cout << "\nPassword    : " << Client.GetPinCode();
         cout << "\nBalance     : " << Client.GetAccountBalance();
         cout << "\n___________________\n";
-
     }
     static void _ReadClientInfo(clsBankClient &Client)
     {
@@ -44,10 +43,14 @@ class clsUpdateClientScreen : protected clsScreen
         cout << "\nEnter Account Balance: ";
         Client.SetAccountBalance(clsInputValidate::ReadFloatNumber());
     }
-    public:
 
-static void ShowUpdateClientScreen()
+public:
+    static void ShowUpdateClientScreen()
     {
+        if (!CheckAccessRights(clsUser::enPermissions::pUpdateClients))
+        {
+            return;
+        }
         _DrawScreenHeader("\tUpdate Client Screen");
         string AccountNumber = "";
         cout << "\nPlease Enter client Account Number: ";
@@ -60,7 +63,7 @@ static void ShowUpdateClientScreen()
         }
 
         clsBankClient Client1 = clsBankClient::Find(AccountNumber);
-    
+
         _PrintClient(Client1);
 
         cout << "\nAre you sure you want to update this client y/n? ";
@@ -80,7 +83,7 @@ static void ShowUpdateClientScreen()
 
             switch (SaveResult)
             {
-            case  clsBankClient::enSaveResults::svSucceeded:
+            case clsBankClient::enSaveResults::svSucceeded:
             {
                 cout << "\nAccount Updated Successfully :-)\n";
                 _PrintClient(Client1);

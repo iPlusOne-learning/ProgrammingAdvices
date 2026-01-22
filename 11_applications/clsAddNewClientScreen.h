@@ -8,7 +8,7 @@
 
 class clsAddNewClientScreen : protected clsScreen
 {
-    private:
+private:
     static void _ReadClientInfo(clsBankClient &Client)
     {
         cout << "\nEnter FirstName: ";
@@ -43,12 +43,15 @@ class clsAddNewClientScreen : protected clsScreen
         cout << "\nPassword    : " << Client.GetPinCode();
         cout << "\nBalance     : " << Client.GetAccountBalance();
         cout << "\n___________________\n";
-
     }
 
-    public:
+public:
     static void ShowAddNewClientScreen()
     {
+        if (!CheckAccessRights(clsUser::enPermissions::pAddNewClient))
+        {
+            return;
+        }
         _DrawScreenHeader("\t\tAdd New Client Screen");
 
         string AccountNumber = "";

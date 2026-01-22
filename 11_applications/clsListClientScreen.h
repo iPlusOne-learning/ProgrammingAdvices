@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 
-class clsClientListScreen : protected clsScreen
+class clsListClientScreen : protected clsScreen
 {
 private:
     static void PrintClientRecordLine(clsBankClient Client)
@@ -22,6 +22,10 @@ private:
 public:
     static void ShowClientsList()
     {
+        if (!CheckAccessRights(clsUser::enPermissions::pListClients))
+        {
+            return;
+        }
         vector<clsBankClient> vClients = clsBankClient::GetClientsList();
         string Title = "\t Client List Screen";
         string SubTitle = "\t  (" + to_string(vClients.size()) + ") Client(s)\n";
