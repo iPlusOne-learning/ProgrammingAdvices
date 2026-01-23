@@ -1,3 +1,4 @@
+#pragma warning(disable : 4996)
 #pragma once
 
 #include<iostream>
@@ -767,7 +768,6 @@ public:
 			}
 			else
 			{
-
 				Date._Month--;
 				Date._Day = NumberOfDaysInAMonth(Date._Month, Date._Year);
 			}
@@ -776,7 +776,6 @@ public:
 		{
 			Date._Day--;
 		}
-
 		return Date;
 	}
 
@@ -1026,7 +1025,6 @@ public:
 		EndOfYearDate._Year = Date1._Year;
 
 		return GetDifferenceInDays(Date1, EndOfYearDate, true);
-
 	}
 
 	short DaysUntilTheEndOfYear()
@@ -1037,7 +1035,6 @@ public:
 	//i added this method to calculate business days between 2 days
 	static short CalculateBusinessDays(clsDate DateFrom, clsDate DateTo)
 	{
-
 		short Days = 0;
 		while (IsDate1BeforeDate2(DateFrom, DateTo))
 		{
@@ -1046,9 +1043,7 @@ public:
 
 			DateFrom = AddOneDay(DateFrom);
 		}
-
 		return Days;
-
 	}
 
 	static short CalculateVacationDays(clsDate DateFrom, clsDate DateTo)
@@ -1061,20 +1056,16 @@ public:
 
 			DateFrom = AddOneDay(DateFrom);
 		}*/
-
 		return CalculateBusinessDays(DateFrom, DateTo);
-
 	}
 	//above method is eough , no need to have method for the object
 
 	static clsDate CalculateVacationReturnDate(clsDate DateFrom, short VacationDays)
 	{
-
 		short WeekEndCounter = 0;
 
 		for (short i = 1; i <= VacationDays; i++)
 		{
-
 			if (IsWeekEnd(DateFrom))
 				WeekEndCounter++;
 
@@ -1121,7 +1112,23 @@ public:
 		return CompareDates(*this, Date2);
 	}
 
-	
+	static string GetSystemDateTimeString()
+	{
+		short Day, Month, Year, Hour, Minute, Second;
+		
+		time_t t = time(0);
+		tm* now = localtime(&t);
+		
+		Year = now->tm_year + 1900;
+		Month = now->tm_mon + 1;
+		Day = now->tm_mday;
+		Hour = now->tm_hour;
+		Minute = now->tm_min;
+		Second = now->tm_sec;
 
+		return (to_string(Day) + "/" + to_string(Month) + "/"
+		+ to_string(Year) + " - " + to_string(Hour) + ":" + to_string(Minute)
+		+ ":" + to_string(Second));
+	}
 };
 
