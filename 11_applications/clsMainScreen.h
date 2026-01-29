@@ -11,23 +11,31 @@
 #include "clsManageUsersScreen.h"
 #include "clsLoginScreen.h"
 #include "Global.h"
+#include "clsLoginRegisterScreen.h"
+#include "clsCurrencyExchangeScreen.h"
 
 using namespace std;
 
-
 class clsMainScreen : protected clsScreen
 {
-    private:
-    
-    enum enMainMenuOptions {
-            eListClients = 1, eAddNewClient = 2, eDeleteClient = 3,
-            eUpdateClient = 4, eFindClient = 5, eShowTransactionsMenu = 6,
-            eManageUsers = 7, eExit = 8
+private:
+    enum enMainMenuOptions
+    {
+        eListClients = 1,
+        eAddNewClient = 2,
+        eDeleteClient = 3,
+        eUpdateClient = 4,
+        eFindClient = 5,
+        eShowTransactionsMenu = 6,
+        eManageUsers = 7,
+        eLoginRegister = 8,
+        eCurrencyExchange = 9,
+        eExit = 10
     };
     static short _ReadMainMenuOption()
     {
-        cout << setw(20) << left << "" << "Choose what do you want to do? [1 to 8]? ";
-        short Choice = clsInputValidate::ReadIntNumberBetween(1,8);
+        cout << setw(20) << left << "" << "Choose what do you want to do? [1 to 10]? ";
+        short Choice = clsInputValidate::ReadIntNumberBetween(1, 10);
         return Choice;
     }
     static void _GoBackToMainMenu()
@@ -73,13 +81,21 @@ class clsMainScreen : protected clsScreen
         // cout << "\nUsers Menu Will be here...\n";
         clsManageUsersScreen::ShowManageUsersMenu();
     }
+    static void _ShowLoginRegisterScreen()
+    {
+        clsLoginRegisterScreen::ShowLoginRegisterScreen();
+    }
+    static void _ShowCurrencyExchangeMenu()
+    {
+        clsCurrencyExchangeScreen::ShowCurrencyExchangeMenu();
+    }
     // static void _ShowEndScreen()
     // {
     //     cout << "\nEnd Screen Will be here...\n";
     // }
     static void _Logout()
     {
-        CurrentUser = clsUser::Find("","");
+        CurrentUser = clsUser::Find("", "");
     }
     static void _PerformMainMenuOption(enMainMenuOptions MainMenuOption)
     {
@@ -93,56 +109,77 @@ class clsMainScreen : protected clsScreen
             break;
         }
         case enMainMenuOptions::eAddNewClient:
+        {
             system("clear");
             _ShowAddNewClientsScreen();
             _GoBackToMainMenu();
             break;
-
+        }
         case enMainMenuOptions::eDeleteClient:
+        {
             system("clear");
             _ShowDeleteClientScreen();
             _GoBackToMainMenu();
             break;
-
+        }
         case enMainMenuOptions::eUpdateClient:
+        {
             system("clear");
             _ShowUpdateClientScreen();
             _GoBackToMainMenu();
             break;
-
+        }
         case enMainMenuOptions::eFindClient:
+        {
             system("clear");
             _ShowFindClientScreen();
             _GoBackToMainMenu();
             break;
-
+        }
         case enMainMenuOptions::eShowTransactionsMenu:
+        {
             system("clear");
             _ShowTransactionsMenu();
             _GoBackToMainMenu();
             break;
-
+        }
         case enMainMenuOptions::eManageUsers:
+        {
             system("clear");
             _ShowManageUsersMenu();
             break;
-
+        }
+        case enMainMenuOptions::eLoginRegister:
+        {
+            system("clear");
+            _ShowLoginRegisterScreen();
+            _GoBackToMainMenu();
+            break;
+        }
+        case enMainMenuOptions::eCurrencyExchange:
+        {
+            system("clear");
+            _ShowCurrencyExchangeMenu();
+            _GoBackToMainMenu();
+            break;
+        }
         case enMainMenuOptions::eExit:
+        {
             system("clear");
             // _ShowEndScreen();
-            //Login();
+            // Login();
             _Logout();
             break;
         }
+        }
     }
 
-    public:
-
+public:
     static void ShowMainMenu()
     {
         system("clear");
         _DrawScreenHeader("\t\tMain Screen");
-        cout << setw(20) << left <<""<< "===========================================\n";
+        cout << setw(20) << left << "" << "===========================================\n";
         cout << setw(20) << left << "" << "\t\t\tMain Menu\n";
         cout << setw(20) << left << "" << "===========================================\n";
         cout << setw(20) << left << "" << "\t[1] Show Client List.\n";
@@ -152,9 +189,10 @@ class clsMainScreen : protected clsScreen
         cout << setw(20) << left << "" << "\t[5] Find Client.\n";
         cout << setw(20) << left << "" << "\t[6] Transactions.\n";
         cout << setw(20) << left << "" << "\t[7] Manage Users.\n";
-        cout << setw(20) << left << "" << "\t[8] Logout.\n";
+        cout << setw(20) << left << "" << "\t[8] Login Register.\n";
+        cout << setw(20) << left << "" << "\t[9] Currency Exchange.\n";
+        cout << setw(20) << left << "" << "\t[10] Logout.\n";
         cout << setw(20) << left << "" << "===========================================\n";
         _PerformMainMenuOption((enMainMenuOptions)_ReadMainMenuOption());
     }
-
 };

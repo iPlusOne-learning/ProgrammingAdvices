@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 #include "clsPerson.h"
@@ -10,9 +11,16 @@ using namespace std;
 
 class clsBankClient : public clsPerson
 {
-private:
+public:
+    struct stTransferLogRecord;
 
-    enum enMode { EmptyMode = 0, UpdateMode = 1, AddNewMode = 2 };
+private:
+    enum enMode
+    {
+        EmptyMode = 0,
+        UpdateMode = 1,
+        AddNewMode = 2
+    };
     enMode _Mode;
 
     string _AccountNumber;
@@ -26,7 +34,7 @@ private:
         vClientData = clsString::Split(Line, Seperator);
 
         return clsBankClient(enMode::UpdateMode, vClientData[0], vClientData[1], vClientData[2],
-            vClientData[3], vClientData[4], vClientData[5], stod(vClientData[6]));
+                             vClientData[3], vClientData[4], vClientData[5], stod(vClientData[6]));
     }
     static string _ConverClientObjectToLine(clsBankClient Client, string Seperator = "#//#")
     {
@@ -38,13 +46,33 @@ private:
         stClientRecord += Client.GetAccountNumber() + Seperator;
         stClientRecord += Client.GetPinCode() + Seperator;
         stClientRecord += to_string(Client.GetAccountBalance());
-    
+
         return stClientRecord;
     }
-    static void _SaveCleintsDataToFile(vector <clsBankClient> vClients)
+
+    static stTransferLogRecord _ConvertTransferLogToRecord(string Line, string Seperator = "#//#")
+    {
+        stTransferLogRecord TransferLogRecord;
+        vector<string> LoginRegisterDataLine = clsString::Split(Line, Seperator);
+
+        if (LoginRegisterDataLine.size() < 7)
+        {
+            return TransferLogRecord;
+        }
+        TransferLogRecord.DateTime = LoginRegisterDataLine[0];
+        TransferLogRecord.SourceAccountNumber = LoginRegisterDataLine[1];
+        TransferLogRecord.DestinationAccountNumber = LoginRegisterDataLine[2];
+        TransferLogRecord.TransferAmount = stoi(LoginRegisterDataLine[3]);
+        TransferLogRecord.strBalanceAfter = stoi(LoginRegisterDataLine[4]);
+        TransferLogRecord.destBalanceAfter = stoi(LoginRegisterDataLine[5]);
+        TransferLogRecord.UserName = LoginRegisterDataLine[6];
+
+        return TransferLogRecord;
+    }
+    static void _SaveCleintsDataToFile(vector<clsBankClient> vClients)
     {
         fstream MyFile;
-        MyFile.open("Clients.txt", ios::out);//overwrite
+        MyFile.open("Clients.txt", ios::out); // overwrite
         string DataLine;
 
         if (MyFile.is_open())
@@ -60,12 +88,12 @@ private:
             MyFile.close();
         }
     }
-    static  vector <clsBankClient> _LoadClientsDataFromFile()
+    static vector<clsBankClient> _LoadClientsDataFromFile()
     {
 
-        vector <clsBankClient> vClients;
+        vector<clsBankClient> vClients;
         fstream MyFile;
-        MyFile.open("Clients.txt", ios::in);//read Mode
+        MyFile.open("Clients.txt", ios::in); // read Mode
 
         if (MyFile.is_open())
         {
@@ -81,10 +109,10 @@ private:
     }
     void _Update()
     {
-        vector <clsBankClient> _vClients;
+        vector<clsBankClient> _vClients;
         _vClients = _LoadClientsDataFromFile();
 
-        for (clsBankClient& C : _vClients)
+        for (clsBankClient &C : _vClients)
         {
             if (C.GetAccountNumber() == GetAccountNumber())
             {
@@ -104,7 +132,7 @@ private:
         _AddDataLineToFile(_ConverClientObjectToLine(*this));
     }
 
-    void _AddDataLineToFile(string  stDataLine)
+    void _AddDataLineToFile(string stDataLine)
     {
         fstream MyFile;
         MyFile.open("Clients.txt", ios::out | ios::app);
@@ -119,27 +147,63 @@ private:
     {
         return clsBankClient(enMode::EmptyMode, "", "", "", "", "", "", 0);
     }
+    string _PrepareTransferLogRecord(float Amount, clsBankClient DestinationClient, string Seperator = "#//#")
+    {
+        string TransferLogRecord = "";
+        TransferLogRecord += clsDate::GetSystemDateTimeString() + Seperator;
+        TransferLogRecord += GetAccountNumber() + Seperator;
+        TransferLogRecord += DestinationClient.GetAccountNumber() + Seperator;
+        TransferLogRecord += to_string(Amount) + Seperator;
+        TransferLogRecord += to_string(GetAccountBalance()) + Seperator;
+        TransferLogRecord += to_string(DestinationClient.GetAccountBalance()) + Seperator;
+        TransferLogRecord += CurrentUser.GetUserName();
+        return TransferLogRecord;
+    }
+
+    void _RegisterTransferLog(float Amount, clsBankClient DestinationClient)
+    {
+
+        string stDataLine = _PrepareTransferLogRecord(Amount, DestinationClient);
+
+        fstream MyFile;
+        MyFile.open("TransferLog.txt", ios::out | ios::app);
+
+        if (MyFile.is_open())
+        {
+
+            MyFile << stDataLine << endl;
+
+            MyFile.close();
+        }
+    }
 
 public:
-
     clsBankClient(enMode Mode, string FirstName, string LastName,
-        string Email, string Phone, string GetAccountNumber, string PinCode,
-        float AccountBalance) :
-        clsPerson(FirstName, LastName, Email, Phone)
+                  string Email, string Phone, string GetAccountNumber, string PinCode,
+                  float AccountBalance) : clsPerson(FirstName, LastName, Email, Phone)
 
     {
         _Mode = Mode;
         _AccountNumber = GetAccountNumber;
         _PinCode = PinCode;
         _AccountBalance = AccountBalance;
-
     }
+
+    struct stTransferLogRecord
+    {
+        string DateTime;
+        string SourceAccountNumber;
+        string DestinationAccountNumber;
+        float TransferAmount;
+        float strBalanceAfter;
+        float destBalanceAfter;
+        string UserName;
+    };
 
     bool IsEmpty()
     {
         return (_Mode == enMode::EmptyMode);
     }
-
 
     string GetAccountNumber()
     {
@@ -165,30 +229,31 @@ public:
     {
         return _AccountBalance;
     }
-    //No UI related code inside object
-    // void Print()
-    // {
-    //     cout << "\nClient Card:";
-    //     cout << "\n___________________";
-    //     cout << "\nFirstName   : " << GetFirstName();
-    //     cout << "\nLastName    : " << GetLastName();
-    //     cout << "\nFull Name   : " << FullName();
-    //     cout << "\nEmail       : " << GetEmail();
-    //     cout << "\nPhone       : " << GetPhone();
-    //     cout << "\nAcc. Number : " << _AccountNumber;
-    //     cout << "\nPassword    : " << _PinCode;
-    //     cout << "\nBalance     : " << _AccountBalance;
-    //     cout << "\n___________________\n";
+    // No UI related code inside object
+    //  void Print()
+    //  {
+    //      cout << "\nClient Card:";
+    //      cout << "\n___________________";
+    //      cout << "\nFirstName   : " << GetFirstName();
+    //      cout << "\nLastName    : " << GetLastName();
+    //      cout << "\nFull Name   : " << FullName();
+    //      cout << "\nEmail       : " << GetEmail();
+    //      cout << "\nPhone       : " << GetPhone();
+    //      cout << "\nAcc. Number : " << _AccountNumber;
+    //      cout << "\nPassword    : " << _PinCode;
+    //      cout << "\nBalance     : " << _AccountBalance;
+    //      cout << "\n___________________\n";
 
     // }
     bool GetMarkedForDeleted()
     {
         return _MarkedForDelete;
     }
+
     static clsBankClient Find(string GetAccountNumber)
     {
         fstream MyFile;
-        MyFile.open("Clients.txt", ios::in);//read Mode
+        MyFile.open("Clients.txt", ios::in); // read Mode
 
         if (MyFile.is_open())
         {
@@ -210,7 +275,7 @@ public:
     static clsBankClient Find(string GetAccountNumber, string PinCode)
     {
         fstream MyFile;
-        MyFile.open("Clients.txt", ios::in);//read Mode
+        MyFile.open("Clients.txt", ios::in); // read Mode
 
         if (MyFile.is_open())
         {
@@ -229,7 +294,12 @@ public:
         return _GetEmptyClientObject();
     }
 
-    enum enSaveResults { svFailedEmptyObject = 0, svSucceeded = 1, svFailedAccountNumberExists = 2 };
+    enum enSaveResults
+    {
+        svFailedEmptyObject = 0,
+        svSucceeded = 1,
+        svFailedAccountNumberExists = 2
+    };
 
     enSaveResults Save()
     {
@@ -272,11 +342,12 @@ public:
 
     static clsBankClient GetAddNewClientObject(string AccountNumber)
     {
-        return clsBankClient(enMode::AddNewMode, "","","","",AccountNumber,"", 0);
+        return clsBankClient(enMode::AddNewMode, "", "", "", "", AccountNumber, "", 0);
     }
+
     bool Delete()
     {
-        vector <clsBankClient> _vClients;
+        vector<clsBankClient> _vClients;
         _vClients = _LoadClientsDataFromFile();
 
         for (clsBankClient &C : _vClients)
@@ -291,25 +362,29 @@ public:
         *this = _GetEmptyClientObject();
         return true;
     }
-    static vector <clsBankClient> GetClientsList()
+
+    static vector<clsBankClient> GetClientsList()
     {
         return _LoadClientsDataFromFile();
     }
+
     static float GetTotalBalances()
     {
-        vector <clsBankClient> vClients = clsBankClient::GetClientsList();
+        vector<clsBankClient> vClients = clsBankClient::GetClientsList();
         double TotalBalances = 0;
         for (clsBankClient Client : vClients)
         {
-            TotalBalances+= Client.GetAccountBalance();
+            TotalBalances += Client.GetAccountBalance();
         }
         return TotalBalances;
     }
+
     void Deposit(double Amount)
     {
         _AccountBalance += Amount;
         Save();
     }
+
     bool Withdraw(double Amount)
     {
         if (Amount > _AccountBalance)
@@ -322,5 +397,37 @@ public:
             Save();
         }
         return true;
+    }
+
+    bool Transfer(float Amount, clsBankClient &DestinationClient)
+    {
+        if (Amount > _AccountBalance)
+        {
+            return false;
+        }
+        Withdraw(Amount);
+        DestinationClient.Deposit(Amount);
+        _RegisterTransferLog(Amount, DestinationClient);
+        return true;
+    }
+
+    static vector<stTransferLogRecord> GetTransferLogList()
+    {
+        vector<stTransferLogRecord> vTransferLogRecord;
+
+        fstream MyFile;
+        MyFile.open("TransferLog.txt", ios::in);
+        if (MyFile.is_open())
+        {
+            string Line;
+            stTransferLogRecord TransferLogRecord;
+            while (getline(MyFile, Line))
+            {
+                TransferLogRecord = _ConvertTransferLogToRecord(Line);
+                vTransferLogRecord.push_back(TransferLogRecord);
+            }
+            MyFile.close();
+        }
+        return vTransferLogRecord;
     }
 };

@@ -212,32 +212,6 @@ class clsUtil
 
     }
 
-    static string  EncryptText(string Text, short EncryptionKey)
-    {
-
-        for (int i = 0; i <= Text.length(); i++)
-        {
-
-            Text[i] = char((int)Text[i] + EncryptionKey);
-
-        }
-
-        return Text;
-
-    }
-
-    static string  DecryptText(string Text, short EncryptionKey)
-    {
-
-        for (int i = 0; i <= Text.length(); i++)
-        {
-
-            Text[i] = char((int)Text[i] - EncryptionKey);
-
-        }
-        return Text;
-
-    }
     static string NumberToText(int Number)
    {
 
@@ -302,7 +276,23 @@ class clsUtil
        }
 
    }
+    static std::string EncryptText(std::string Str, short Key = 2)
+    {
+        for (int i = 0; i < Str.length(); i++)
+        {
+            Str[i] = char(short(Str[i]) + Key);
+        }
+        return Str;
+    }
 
+    static std::string DecryptText(std::string Str, short Key = 2)
+    {
+        for (int i = 0; i < Str.length(); i++)
+        {
+            Str[i] = char(short(Str[i]) - Key);
+        }
+        return Str;
+    }
 
 };
 

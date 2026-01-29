@@ -7,12 +7,16 @@
 #include <vector>
 #include <fstream>
 #include "clsDate.h"
-
+#include "clsInputValidate.h"
+#include "clsUtil.h"
 
 using namespace std;
 
 class clsUser : public clsPerson
 {
+public:
+    struct stLoginRegisterRecord;
+
 private:
     enum enMode
     {
@@ -31,7 +35,7 @@ private:
         string LoginRecord = "";
         LoginRecord = clsDate::GetSystemDateTimeString() + Separator;
         LoginRecord += User._UserName + Separator;
-        LoginRecord += User._Password + Separator;
+        LoginRecord += clsUtil::EncryptText(User._Password) + Separator;
         LoginRecord += to_string(User._Permissions);
         return LoginRecord;
     }
@@ -42,22 +46,38 @@ private:
         vUserData = clsString::Split(Line, Seperator);
 
         return clsUser(enMode::UpdateMode, vUserData[0], vUserData[1], vUserData[2],
-                       vUserData[3], vUserData[4], vUserData[5], stoi(vUserData[6]));
+                       vUserData[3], vUserData[4], clsUtil::DecryptText(vUserData[5]), stoi(vUserData[6]));
     }
 
     static string _ConverUserObjectToLine(clsUser User, string Seperator = "#//#")
     {
-
         string UserRecord = "";
         UserRecord += User.GetFirstName() + Seperator;
         UserRecord += User.GetLastName() + Seperator;
         UserRecord += User.GetEmail() + Seperator;
         UserRecord += User.GetPhone() + Seperator;
         UserRecord += User._UserName + Seperator;
-        UserRecord += User._Password + Seperator;
+        UserRecord += clsUtil::EncryptText(User._Password) + Seperator;
         UserRecord += to_string(User._Permissions);
 
         return UserRecord;
+    }
+
+    static stLoginRegisterRecord _ConvertLoginRegisterLineToRecord(string Line, string Seperator = "#//#")
+    {
+        stLoginRegisterRecord TransferLogRecord;
+        vector<string> LoginRegisterDataLine = clsString::Split(Line, Seperator);
+
+        if (LoginRegisterDataLine.size() < 4)
+        {
+            return TransferLogRecord;
+        }
+        TransferLogRecord.DateTime = LoginRegisterDataLine[0];
+        TransferLogRecord.UserName = LoginRegisterDataLine[1];
+        TransferLogRecord.Password = LoginRegisterDataLine[2];
+        TransferLogRecord.Permissions = stoi(LoginRegisterDataLine[3]);
+
+        return TransferLogRecord;
     }
 
     static vector<clsUser> _LoadUsersDataFromFile()
@@ -156,7 +176,16 @@ public:
         pUpdateClients = 8,
         pFindClient = 16,
         pTranactions = 32,
-        pManageUsers = 64
+        pManageUsers = 64,
+        pShowLoginRegister = 128,
+    };
+
+    struct stLoginRegisterRecord
+    {
+        string DateTime;
+        string UserName;
+        string Password;
+        int Permissions;
     };
 
     clsUser(enMode Mode, string FirstName, string LastName,
@@ -361,4 +390,26 @@ public:
             MyFile.close();
         }
     }
+
+    static vector<stLoginRegisterRecord> GetLoginRegisterList()
+    {
+        vector<stLoginRegisterRecord> vTransferLogRecord;
+
+        fstream MyFile;
+        MyFile.open("LoginRegister.txt", ios::in);
+        if (MyFile.is_open())
+        {
+            string Line;
+            stLoginRegisterRecord TransferLogRecord;
+            while (getline(MyFile, Line))
+            {
+                TransferLogRecord = _ConvertLoginRegisterLineToRecord(Line);
+                vTransferLogRecord.push_back(TransferLogRecord);
+            }
+            MyFile.close();
+        }
+        return vTransferLogRecord;
+    }
+
+
 };
