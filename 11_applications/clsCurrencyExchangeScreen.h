@@ -41,7 +41,7 @@ private:
     }
     static void _ShowFindCurrencyScreen()
     {
-        clsFindCurrencyScreen::ShowFindCurrencyScreen();
+        clsFindCurrencyScreen::ShowCurrencyCalculatorScreen();
     }
     static void _ShowUpdateRateScreen()
     {
