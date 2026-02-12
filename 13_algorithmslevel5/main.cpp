@@ -1,24 +1,31 @@
 #include <iostream>
-#include "clsDblLinkedList.h"
+#include "clsDynamicArray.h"
 
 using namespace std;
 
 int main()
 {
 
-    clsDblLinkedList<int> MydblLinkedList;
+    clsDynamicArray <int> MyDynamicArray(5);
 
-    MydblLinkedList.InsertAtBeginning(5);
-    MydblLinkedList.InsertAtBeginning(4);
-    MydblLinkedList.InsertAtBeginning(3);
-    MydblLinkedList.InsertAtBeginning(2);
-    MydblLinkedList.InsertAtBeginning(1);
+    MyDynamicArray.SetItem(0, 10);
+    MyDynamicArray.SetItem(1, 20);
+    MyDynamicArray.SetItem(2, 30);
+    MyDynamicArray.SetItem(3, 40);
+    MyDynamicArray.SetItem(4, 50);
 
-    cout << "\nLinked List Content:\n";
-    MydblLinkedList.PrintList();
+    cout << "\nIs Empty? " << MyDynamicArray.IsEmpty();
+    cout << "\nArray Size: " << MyDynamicArray.Size() << "\n";
+    cout << "\nArray Items: \n";
+    MyDynamicArray.PrintList();
 
-    MydblLinkedList.Reverse();
+    cout << "\nItem(2): " << MyDynamicArray.GetItem(2) << "\n";
+    MyDynamicArray.Reverse();
+    cout << "\nArray Items after Reverse: \n";
+    MyDynamicArray.PrintList();
 
-    cout << "\nLinked List Content after reverse:\n";
-    MydblLinkedList.PrintList();
+    MyDynamicArray.Clear();
+    cout << "\nArray after clear: \n";
+    MyDynamicArray.PrintList();
+
 }
