@@ -21,14 +21,6 @@ public:
 
     void InsertAtBeginning(T value)
     {
-
-        /*
-            1-Create a new node with the desired value.
-            2-Set the next pointer of the new node to the current head of the list.
-            3-Set the previous pointer of the current head to the new node.
-            4-Set the new node as the new head of the list.
-        */
-
         Node *newNode = new Node();
         newNode->value = value;
         newNode->next = head;
@@ -42,7 +34,6 @@ public:
         _Size++;
     }
 
-    // Print the linked list
     void PrintList()
 
     {
@@ -73,14 +64,6 @@ public:
 
     void InsertAfter(Node *current, T value)
     {
-
-        /*  1 - Create a new node with the desired value.
-             2-Set the next pointer of the new node to the next node of the current node.
-             3-Set the previous pointer of the new node to the current node.
-             4-Set the next pointer of the current node to the new node.
-             5-Set the previous pointer of the next node to the new node(if it exists).
-        */
-
         Node *newNode = new Node();
         newNode->value = value;
         newNode->next = current->next;
@@ -94,16 +77,20 @@ public:
         _Size++;
     }
 
+    bool InsertAfter(int Index, T value)
+    {
+        Node *ItemNode = GetNode(Index);
+        if (ItemNode != NULL)
+        {
+            InsertAfter(ItemNode, value);
+            return true;
+        }
+        else
+            return false;
+    }
+
     void InsertAtEnd(T value)
     {
-
-        /*
-            1-Create a new node with the desired value.
-            2-Traverse the list to find the last node.
-            3-Set the next pointer of the last node to the new node.
-            4-Set the previous pointer of the new node to the last node.
-        */
-
         Node *newNode = new Node();
         newNode->value = value;
         newNode->next = NULL;
@@ -127,12 +114,6 @@ public:
 
     void DeleteNode(Node *&NodeToDelete)
     {
-
-        /*
-            1-Set the next pointer of the previous node to the next pointer of the current node.
-            2-Set the previous pointer of the next node to the previous pointer of the current node.
-            3-Delete the current node.
-        */
         if (head == NULL || NodeToDelete == NULL)
         {
             return;
@@ -226,8 +207,89 @@ public:
             DeleteFirstNode();
         }
     }
+    // void Reverse()
+    // {
+    //     Node* newHead = head;
+    //     head = NULL;
+
+    //     while (newHead != NULL)
+    //     {
+    //         InsertAtBeginning(newHead->value);
+    //         newHead = newHead->next;
+    //     }
+
+    // }
     void Reverse()
     {
- 
+        Node *current = head;
+        Node *temp = nullptr;
+
+        while (current != nullptr)
+        {
+            temp = current->prev;
+            current->prev = current->next;
+            current->next = temp;
+            current = current->prev;
+        }
+        if (temp != nullptr)
+        {
+            head = temp->prev;
+        }
+    }
+
+    // Node *GetNode(int Index)
+    // {
+    //     Node *current = head;
+    //     if (IsEmpty())
+    //         return nullptr;
+    //     while (current != NULL)
+    //     {
+    //         if (current->value == value1)
+    //         {
+    //             return current->next;
+    //         }
+    //         current = current->next;
+    //     }
+    //     return nullptr;
+    // }
+
+    Node *GetNode(int Index)
+    {
+        int Counter = 0;
+
+        if (Index > _Size || Index < 0)
+            return NULL;
+        Node *Current = head;
+
+        while (Current != NULL || (Current->next != NULL))
+        {
+            if (Counter == Index)
+                break;
+            Current = Current->next;
+            Counter++;
+        }
+        return Current;
+    }
+
+    T GetItem(int Index)
+    {
+        Node* ItemNode = GetNode(Index);
+
+        if (ItemNode == nullptr)
+            return {};
+        else
+            return ItemNode->value;
+    }
+
+    bool UpdateItem(int Index, T NewValue)
+    {
+        Node* ItemToUpdate = GetNode(Index);
+        if (ItemToUpdate != nullptr)
+        {
+            ItemToUpdate->value = NewValue;
+            return true;
+        }
+        else
+            return false;
     }
 };
